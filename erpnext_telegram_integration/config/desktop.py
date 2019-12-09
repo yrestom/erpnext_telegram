@@ -8,7 +8,7 @@ def get_data():
 		# Modules
 		{
 			"module_name": "Erpnext Telegram Integration",
-			"category": "Modules",
+			"category": "Administration",
 			"label": _("Erpnext Telegram Integration"),
 			"color": "#3498db",
 			"icon": "octicon octicon-repo",
