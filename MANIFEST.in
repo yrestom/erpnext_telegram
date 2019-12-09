@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include erpnext_telegram_integration *.css
+recursive-include erpnext_telegram_integration *.csv
+recursive-include erpnext_telegram_integration *.html
+recursive-include erpnext_telegram_integration *.ico
+recursive-include erpnext_telegram_integration *.js
+recursive-include erpnext_telegram_integration *.json
+recursive-include erpnext_telegram_integration *.md
+recursive-include erpnext_telegram_integration *.png
+recursive-include erpnext_telegram_integration *.py
+recursive-include erpnext_telegram_integration *.svg
+recursive-include erpnext_telegram_integration *.txt
+recursive-exclude erpnext_telegram_integration *.pyc

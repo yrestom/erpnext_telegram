@@ -1,0 +1,105 @@
+{
+ "allow_rename": 1,
+ "autoname": "format:{telegram_user}-{telegram_settings}",
+ "creation": "2019-12-01 02:31:10.562643",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "party",
+  "telegram_user",
+  "telegram_user_name",
+  "telegram_settings",
+  "section_break_4",
+  "is_group_chat",
+  "generat_telegram_token",
+  "telegram_token",
+  "column_break_9",
+  "get_chat_id",
+  "telegram_chat_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "party",
+   "fieldtype": "Link",
+   "label": "Party",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "telegram_user",
+   "fieldtype": "Dynamic Link",
+   "label": "Telegram User",
+   "options": "party"
+  },
+  {
+   "fieldname": "telegram_user_name",
+   "fieldtype": "Data",
+   "label": "Telegram User Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "generat_telegram_token",
+   "fieldtype": "Button",
+   "label": "Generat Telegram Token"
+  },
+  {
+   "fieldname": "telegram_token",
+   "fieldtype": "Data",
+   "label": "Telegram Token"
+  },
+  {
+   "fieldname": "get_chat_id",
+   "fieldtype": "Button",
+   "label": "Get Chat ID"
+  },
+  {
+   "fieldname": "telegram_chat_id",
+   "fieldtype": "Data",
+   "label": "Telegram Chat ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "telegram_settings",
+   "fieldtype": "Link",
+   "label": "Telegram Settings",
+   "options": "Telegram Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group_chat",
+   "fieldtype": "Check",
+   "label": "Is Group Chat"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "modified": "2019-12-03 10:28:19.558237",
+ "modified_by": "Administrator",
+ "module": "Erpnext Telegram Integration",
+ "name": "Telegram User Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

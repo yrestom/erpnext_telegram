@@ -1,0 +1,18 @@
+# coding=utf-8
+
+from __future__ import unicode_literals
+from frappe import _
+
+def get_data():
+	return [
+		# Modules
+		{
+			"module_name": "Erpnext Telegram Integration",
+			"category": "Modules",
+			"label": _("Erpnext Telegram Integration"),
+			"color": "#3498db",
+			"icon": "octicon octicon-repo",
+			"type": "module",
+			"description": "Telegram Integration For Erpnext."
+		}
+	]
