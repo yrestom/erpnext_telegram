@@ -21,8 +21,6 @@
   "date_changed",
   "days_in_advance",
   "value_changed",
-  "sender",
-  "sender_email",
   "section_break_9",
   "condition",
   "column_break_6",
@@ -31,7 +29,6 @@
   "set_property_after_alert",
   "property_value",
   "column_break_5",
-  "recipients",
   "message_sb",
   "message",
   "message_examples",
@@ -142,21 +139,6 @@
    "label": "Value Changed"
   },
   {
-   "fieldname": "sender",
-   "fieldtype": "Link",
-   "hidden": 1,
-   "label": "Sender",
-   "options": "Email Account"
-  },
-  {
-   "fieldname": "sender_email",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Sender Email",
-   "options": "Email",
-   "read_only": 1
-  },
-  {
    "fieldname": "section_break_9",
    "fieldtype": "Section Break"
   },
@@ -198,12 +180,6 @@
    "fieldname": "column_break_5",
    "fieldtype": "Section Break",
    "label": "Recipients"
-  },
-  {
-   "fieldname": "recipients",
-   "fieldtype": "Table",
-   "label": "Recipients",
-   "options": "Notification Recipient"
   },
   {
    "fieldname": "message_sb",
@@ -266,7 +242,7 @@
   }
  ],
  "icon": "fa fa-envelope",
- "modified": "2019-12-03 10:30:50.454486",
+ "modified": "2019-12-09 11:04:57.002631",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "Telegram Notification",

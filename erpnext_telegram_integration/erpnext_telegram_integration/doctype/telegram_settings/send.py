@@ -12,10 +12,12 @@ import json
 from werkzeug import url_fix
 from six.moves.urllib.parse import quote, urlencode, urlparse
 
+# Test API for resending notification from another instance through Hooks to telegram
+
 class ToObject(object):
     def __init__(self, data):
 	    self.__dict__ = json.loads(data)
-
+# link :
 #'https://erp.totrox.com/api/method/erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_settings.send.send'
 @frappe.whitelist(allow_guest=True)
 def send(*args, **kwargs):
@@ -43,9 +45,9 @@ def send(*args, **kwargs):
 		
 	else:
 		message = headers
-
-	telegram_chat_id = frappe.db.get_value('Telegram User Settings', "ahmed@ahmed.com-ErpTotorxBot",'telegram_chat_id')
-	telegram_settings = frappe.db.get_value('Telegram User Settings', "ahmed@ahmed.com-ErpTotorxBot",'telegram_settings')
+	# "ahmed@ahmed.com-ErpTotorxBot" is a name for 'Telegram User Settings'
+	telegram_chat_id = frappe.db.get_value('Telegram User Settings', 'ahmed@ahmed.com-ErpTotorxBot','telegram_chat_id')
+	telegram_settings = frappe.db.get_value('Telegram User Settings', 'ahmed@ahmed.com-ErpTotorxBot','telegram_settings')
 	telegram_token = frappe.db.get_value('Telegram Settings', telegram_settings,'telegram_token')
 	bot = telegram.Bot(token=telegram_token)
 
