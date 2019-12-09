@@ -40,17 +40,6 @@ frappe.notification = {
 			// set date changed options
 			frm.set_df_property("date_changed", "options", get_date_change_options());
 
-			// let email_fields = $.map(fields,
-			// 	function(d) { return (d.options == "Email" ||
-			// 		(d.options=='User' && d.fieldtype=='Link')) ?
-			// 		get_select_options(d) : null; });
-
-			// // set email recipient options
-			// frappe.meta.get_docfield("Notification Recipient", "email_by_document_field",
-			// 	// set first option as blank to allow notification not to be defaulted to the owner
-			// 	frm.doc.name).options = [""].concat(["owner"].concat(email_fields));
-
-			// frm.fields_dict.recipients.grid.refresh();
 		});
 	}
 }
@@ -72,12 +61,7 @@ frappe.ui.form.on('Telegram Notification', {
 			}
 		});
 	},
-	// refresh: function(frm) {
-	// 	frm.toggle_reqd("recipients", frm.doc.channel=="Email");
-	// 	frappe.notification.setup_fieldname_select(frm);
-	// 	frm.get_field("is_standard").toggle(frappe.boot.developer_mode);
-	// 	frm.trigger('event');
-	// },
+
 	document_type: function(frm) {
 		frappe.notification.setup_fieldname_select(frm);
 	},
@@ -104,7 +88,5 @@ frappe.ui.form.on('Telegram Notification', {
 			});
 		}
 	},
-	// channel: function(frm) {
-	// 	frm.toggle_reqd("recipients", frm.doc.channel=="Email");
-	// }
+	
 });
