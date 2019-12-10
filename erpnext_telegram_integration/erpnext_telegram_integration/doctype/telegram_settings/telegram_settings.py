@@ -8,6 +8,7 @@ import telegram
 from frappe.model.document import Document
 from frappe.utils import get_url_to_form
 from frappe import _
+from frappe.utils.print_format import download_pdf
 
 class TelegramSettings(Document):
 	pass
@@ -29,14 +30,24 @@ def send_to_telegram(telegram_user, message, reference_doctype=None, reference_n
 		telegram_doc_link = _("See the document at {0}").format(doc_url)
 		if message:
 			message = space + str(message) + space + str(telegram_doc_link)
+			if attachment:
+				attachment_url =get_url_for_telegram(reference_doctype, reference_name)
+				message = message + space +  attachment_url
 			bot.send_message(chat_id=telegram_chat_id, text=message)
 		
 	else:
 		message = space + str(message) + space
 		bot.send_message(chat_id=telegram_chat_id, text=message)
 
-	if attachment:
-		## attached_file must be url  'tests/telegram.ogg'
-		bot.send_document(chat_id=telegram_chat_id, document=open(attachment, 'rb'))
-		
-	
+
+
+def get_url_for_telegram(doctype, name):
+	doc = frappe.get_doc(doctype, name)
+	return "{url}/api/method/erpnext_telegram_integration.get_pdf.pdf?doctype={doctype}&name={name}&key={key}".format(
+		url=frappe.utils.get_url(),
+		doctype=doctype,
+		name=name,
+		key=doc.get_signature()
+	).replace(" ", "%20")
+
+

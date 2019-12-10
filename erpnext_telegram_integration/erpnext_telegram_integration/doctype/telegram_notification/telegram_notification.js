@@ -61,6 +61,11 @@ frappe.ui.form.on('Telegram Notification', {
 			}
 		});
 	},
+	refresh: function(frm) {
+		frappe.notification.setup_fieldname_select(frm);
+		frm.get_field("is_standard").toggle(frappe.boot.developer_mode);
+		frm.trigger('event');
+	},
 
 	document_type: function(frm) {
 		frappe.notification.setup_fieldname_select(frm);
