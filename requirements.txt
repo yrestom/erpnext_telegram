@@ -1,1 +1,2 @@
 frappe
+python-telegram-bot
