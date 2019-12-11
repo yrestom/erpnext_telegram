@@ -229,6 +229,7 @@
    "depends_on": "attach_print",
    "fieldname": "print_format",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "Print Format",
    "options": "Print Format"
   },
@@ -242,7 +243,7 @@
   }
  ],
  "icon": "fa fa-envelope",
- "modified": "2019-12-09 11:04:57.002631",
+ "modified": "2019-12-10 13:50:21.814984",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "Telegram Notification",
