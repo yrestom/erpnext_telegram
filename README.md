@@ -36,7 +36,7 @@ In Erpnext Telegram Integration
     8. press Save
 
 3. Go to -> Telegram Notification -> New
-    Hear you can configure various notifications in your system to remind you of important activities.
+    Here you can configure various notifications in your system to remind you of important activities.
     As the orginal Erpnext Notification https://erpnext.com/docs/user/manual/en/setting-up/notifications
 
 4. Also, you can send directly a Telegram message from any form view by going to the Menu and click "Send To Telegram".
