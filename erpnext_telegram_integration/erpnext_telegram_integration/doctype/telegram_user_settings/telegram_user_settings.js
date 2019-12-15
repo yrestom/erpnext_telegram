@@ -16,9 +16,9 @@ frappe.ui.form.on('Telegram User Settings', {
 	},
 
 
-	generat_telegram_token: function(frm) {
+	generate_telegram_token: function(frm) {
 		frappe.call({
-			method: 'erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_user_settings.telegram_user_settings.generat_telegram_token',
+			method: 'erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_user_settings.telegram_user_settings.generate_telegram_token',
 			args: {"is_group_chat":cur_frm.doc.is_group_chat},
 			callback: (r) => {
 				// console.log(r.message[0]);

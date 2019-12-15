@@ -12,7 +12,7 @@
   "telegram_settings",
   "section_break_4",
   "is_group_chat",
-  "generat_telegram_token",
+  "generate_telegram_token",
   "telegram_token",
   "column_break_9",
   "get_chat_id",
@@ -40,11 +40,6 @@
   {
    "fieldname": "section_break_4",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "generat_telegram_token",
-   "fieldtype": "Button",
-   "label": "Generat Telegram Token"
   },
   {
    "fieldname": "telegram_token",
@@ -77,9 +72,14 @@
   {
    "fieldname": "column_break_9",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "generate_telegram_token",
+   "fieldtype": "Button",
+   "label": "Generate Telegram Token"
   }
  ],
- "modified": "2019-12-03 10:28:19.558237",
+ "modified": "2019-12-14 14:37:53.302748",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "Telegram User Settings",

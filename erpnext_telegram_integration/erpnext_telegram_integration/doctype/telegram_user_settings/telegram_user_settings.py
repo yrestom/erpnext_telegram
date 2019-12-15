@@ -6,7 +6,8 @@ from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
 import telegram
-import secrets
+import binascii
+import os
 
 
 class TelegramUserSettings(Document):
@@ -37,11 +38,11 @@ class TelegramUserSettings(Document):
 
 
 @frappe.whitelist()
-def generat_telegram_token(is_group_chat):
+def generate_telegram_token(is_group_chat):
 	if int(is_group_chat) == 1:
-		return "/"+ secrets.token_hex(19)
+		return "/"+ binascii.hexlify(os.urandom(19)).decode()
 	else:
-		return secrets.token_hex(20)
+		return binascii.hexlify(os.urandom(20)).decode()
 
 @frappe.whitelist()
 def get_chat_id_button(telegram_token, telegram_settings):
