@@ -106,7 +106,7 @@ doc_events = {
 		"on_update": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_telegram_notifications",
 		"on_cancel": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_telegram_notifications",
 		"on_trash": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_telegram_notifications",
-		"on_submit": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_method_telerun_telegram_notificationsgram",
+		"on_submit": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_telegram_notifications",
 		"on_update_after_submit": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_telegram_notifications",
                 "on_change": "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.run_telegram_notifications",
 	},
