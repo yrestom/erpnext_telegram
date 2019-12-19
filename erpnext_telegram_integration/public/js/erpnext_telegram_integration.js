@@ -28,6 +28,8 @@ $(document).on('app_ready', function() {
                                 if(values) {
                                     var space = "\n"+"\n";
                                     var the_message = "From : " + user_full_name + space + values.subject + space + values.message;
+
+                                    // send telegram msg
                                     frappe.call({
                                         method: "erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_settings.telegram_settings.send_to_telegram",
                                         args: {
@@ -42,6 +44,18 @@ $(document).on('app_ready', function() {
                                             frappe.msgprint(__("Successfully Sent to: " + values.telegram_user));
                                             dialog.hide();
                                         }
+                                    });
+
+                                    // add comment
+                                    var comment_message = 'To : ' + values.telegram_user + space + values.message;
+                                    frappe.call({
+                                        method: "frappe.desk.form.utils.add_comment",
+                                        args: {
+                                            reference_doctype: reference_doctype,
+                                            reference_name: reference_name,
+                                            content: comment_message,
+                                            comment_email: frappe.session.user
+                                        },
                                     });
                                 }
                                
