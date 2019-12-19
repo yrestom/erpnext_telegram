@@ -6,9 +6,7 @@ $(document).on('app_ready', function() {
         if (route[0] == "Form") {
             frappe.ui.form.on(route[1], {
                 refresh: function (frm) {
-                    console.log("doctype =" + frm.doctype);
                     cur_frm.page.add_menu_item(__("Send To Telegram"), function() {
-                        // frappe.msgprint("Send To Telegram");
                         var user_name = frappe.user.name;
                         var user_full_name = frappe.session.user_fullname;
                         var reference_doctype = cur_frm.doctype;
