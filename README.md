@@ -13,7 +13,7 @@ Telegram Integration For Frappe & Erpnext to sending fast Telegram notifications
 ### Install App
 
 1. `./env/bin/pip install python-telegram-bot --upgrade`
-2. `bench get-app erpnext_telegram_integration [https://github.com/yrestom/erpnext_telegram](https://github.com/yrestom/erpnext_telegram)`
+2. `bench get-app erpnext_telegram_integration https://github.com/yrestom/erpnext_telegram.git`
 3. `bench install-app erpnext_telegram_integration`
 4. `bench build`
 5. `bench restart`
