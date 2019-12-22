@@ -116,13 +116,13 @@ doc_events = {
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 # 	"all": [
 # 		"erpnext_telegram_integration.tasks.all"
 # 	],
-# 	"daily": [
-# 		"erpnext_telegram_integration.tasks.daily"
-# 	],
+	"daily": [
+		"erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.trigger_daily_alerts",
+	],
 # 	"hourly": [
 # 		"erpnext_telegram_integration.tasks.hourly"
 # 	],
@@ -132,7 +132,7 @@ doc_events = {
 # 	"monthly": [
 # 		"erpnext_telegram_integration.tasks.monthly"
 # 	]
-# }
+}
 
 # Testing
 # -------
