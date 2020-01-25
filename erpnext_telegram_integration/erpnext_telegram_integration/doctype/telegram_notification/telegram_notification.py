@@ -36,7 +36,7 @@ class TelegramNotification(Document):
 		self.validate_forbidden_types()
 		self.validate_condition()
 		self.validate_standard()
-		frappe.cache().hdel('notifications', self.document_type)
+		frappe.cache().hdel('tel_notifications', self.document_type)
 
 	def on_update(self):
 		path = export_module_json(self, self.is_standard, self.module)
@@ -206,24 +206,24 @@ def run_telegram_notifications(doc, method):
 	if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
 		return
 
-	if doc.flags.notifications_executed==None:
-		doc.flags.notifications_executed = []
+	if doc.flags.tel_notifications_executed==None:
+		doc.flags.tel_notifications_executed = []
 
-	if doc.flags.notifications == None:
-		alerts = frappe.cache().hget('notifications', doc.doctype)
+	if doc.flags.tel_notifications == None:
+		alerts = frappe.cache().hget('tel_notifications', doc.doctype)
 		if alerts==None:
 			alerts = frappe.get_all('Telegram Notification', fields=['name', 'event', 'method'],
 				filters={'enabled': 1, 'document_type': doc.doctype})
-			frappe.cache().hset('notifications', doc.doctype, alerts)
-		doc.flags.notifications = alerts
+			frappe.cache().hset('tel_notifications', doc.doctype, alerts)
+		doc.flags.tel_notifications = alerts
 
-	if not doc.flags.notifications:
+	if not doc.flags.tel_notifications:
 		return
 
 	def _evaluate_alert(alert):
-		if not alert.name in doc.flags.notifications_executed:
+		if not alert.name in doc.flags.tel_notifications_executed:
 			evaluate_alert(doc, alert.name, alert.event)
-			doc.flags.notifications_executed.append(alert.name)
+			doc.flags.tel_notifications_executed.append(alert.name)
 
 	event_map = {
 		"on_update": "Save",
@@ -238,7 +238,7 @@ def run_telegram_notifications(doc, method):
 		event_map['before_change'] = 'Value Change'
 		event_map['before_update_after_submit'] = 'Value Change'
 
-	for alert in doc.flags.notifications:
+	for alert in doc.flags.tel_notifications:
 		event = event_map.get(method, None)
 		if event and alert.event == event:
 			_evaluate_alert(alert)
