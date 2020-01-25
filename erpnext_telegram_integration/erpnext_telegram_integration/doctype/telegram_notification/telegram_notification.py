@@ -36,7 +36,7 @@ class TelegramNotification(Document):
 		self.validate_forbidden_types()
 		self.validate_condition()
 		self.validate_standard()
-		frappe.cache().hdel('notifications', self.document_type)
+		frappe.cache().hdel('tel_notifications', self.document_type)
 
 	def on_update(self):
 		path = export_module_json(self, self.is_standard, self.module)
@@ -210,14 +210,14 @@ def run_telegram_notifications(doc, method):
 		doc.flags.notifications_executed = []
 
 	if doc.flags.notifications == None:
-		alerts = frappe.cache().hget('notifications', doc.doctype)
+		alerts = frappe.cache().hget('tel_notifications', doc.doctype)
 		if alerts==None:
 			alerts = frappe.get_all('Telegram Notification', fields=['name', 'event', 'method'],
 				filters={'enabled': 1, 'document_type': doc.doctype})
-			frappe.cache().hset('notifications', doc.doctype, alerts)
+			frappe.cache().hset('tel_notifications', doc.doctype, alerts)
 		doc.flags.notifications = alerts
 
-	if not doc.flags.notifications:
+# 	if not doc.flags.notifications:
 		return
 
 	def _evaluate_alert(alert):
