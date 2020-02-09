@@ -4,7 +4,7 @@ from frappe import _
 def get_data():
 	return [
 		{
-			"label": _("Settings"),
+			"label": _("Telegram Notifications"),
 			"items": [
 				{
 					"type": "doctype",
@@ -19,6 +19,17 @@ def get_data():
 				{
 					"type": "doctype",
 					"name": "Telegram Notification",
+					"onboard": 1,
+				},
+				
+			]
+		},
+		{
+			"label": _("SMS Notifications"),
+			"items": [
+				{
+					"type": "doctype",
+					"name": "SMS Settings",
 					"onboard": 1,
 				},
 				{
