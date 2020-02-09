@@ -14,5 +14,14 @@ def get_data():
 			"icon": "octicon octicon-repo",
 			"type": "module",
 			"description": "Telegram Integration For Erpnext."
+		},
+		{
+			"module_name": "Extra Notifications",
+			"category": "Administration",
+			"label": _("Extra Notifications"),
+			"color": "#3498db",
+			"icon": "octicon octicon-repo",
+			"type": "module",
+			"description": "Telegram & SMS Notifications For Erpnext."
 		}
 	]
