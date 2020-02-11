@@ -3,22 +3,18 @@ from frappe import _
 
 def get_data():
 	return [
+	
 		{
-			"label": _("Telegram Notifications"),
+			"label": _("SMS Notifications"),
 			"items": [
 				{
 					"type": "doctype",
-					"name": "Telegram Settings",
+					"name": "SMS Settings",
 					"onboard": 1,
 				},
 				{
 					"type": "doctype",
-					"name": "Telegram User Settings",
-					"onboard": 1,
-				},
-				{
-					"type": "doctype",
-					"name": "Telegram Notification",
+					"name": "SMS Notification",
 					"onboard": 1,
 				},
 				
