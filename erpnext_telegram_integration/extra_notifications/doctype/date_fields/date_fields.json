@@ -1,0 +1,72 @@
+{
+ "creation": "2020-02-14 00:21:21.344774",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enable",
+  "label",
+  "fieldname",
+  "fieldtype",
+  "days_before_or_after",
+  "days"
+ ],
+ "fields": [
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Label",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fieldname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Field Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "fieldtype",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Field Type",
+   "read_only": 1
+  },
+  {
+   "default": "Days Before",
+   "fieldname": "days_before_or_after",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Days Before or After",
+   "options": "Days Before\nDays After"
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "days",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Days",
+   "options": "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
+  },
+  {
+   "default": "1",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enable "
+  }
+ ],
+ "istable": 1,
+ "modified": "2020-02-14 00:43:44.380107",
+ "modified_by": "Administrator",
+ "module": "Extra Notifications",
+ "name": "Date Fields",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
