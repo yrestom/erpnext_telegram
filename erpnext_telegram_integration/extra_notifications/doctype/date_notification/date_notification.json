@@ -11,9 +11,8 @@
   "condition",
   "column_break_6",
   "html_7",
-  "section_break_5",
-  "get_date_fields",
   "section_break_7",
+  "get_date_fields",
   "date_fields"
  ],
  "fields": [
@@ -39,15 +38,13 @@
   },
   {
    "fieldname": "section_break_3",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "section_break_5",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Conditions"
   },
   {
    "fieldname": "section_break_7",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "label": "Fields"
   },
   {
    "fieldname": "date_fields",
@@ -69,10 +66,11 @@
   {
    "fieldname": "html_7",
    "fieldtype": "HTML",
+   "label": "Condition Examples",
    "options": "<p><strong>Condition Examples:</strong></p>\n<pre>doc.status==\"Open\"<br>doc.due_date==nowdate()<br>doc.total &gt; 40000\n</pre>\n"
   }
  ],
- "modified": "2020-02-16 14:00:29.691801",
+ "modified": "2020-02-16 20:13:19.109159",
  "modified_by": "Administrator",
  "module": "Extra Notifications",
  "name": "Date Notification",

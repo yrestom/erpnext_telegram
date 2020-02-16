@@ -35,7 +35,8 @@ frappe.ui.form.on('Date Notification', {
 		if(frm.doc.enable) {
 			frm.add_custom_button(__('Get Alerts for Today'), function() {
 				frappe.call({
-					method: 'erpnext_telegram_integration.extra_notifications.doctype.date_notification.date_notification.get_documents_for_today',
+					// method: 'erpnext_telegram_integration.extra_notifications.doctype.date_notification.date_notification.get_documents_for_today',
+					method: 'erpnext_telegram_integration.extra_notifications.doctype.date_notification.date_notification.trigger_daily_alerts',
 					args: {
 						notification: frm.doc.name
 					},
@@ -49,5 +50,9 @@ frappe.ui.form.on('Date Notification', {
 				});
 			});
 		}
+	},
+	view_properties: function(frm) {
+		frappe.route_options = {doc_type:frm.doc.doctype_name};
+		frappe.set_route("Form", "Customize Form");
 	},
 });
