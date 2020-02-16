@@ -65,8 +65,19 @@ class DateNotification(Document):
 
 
 
-	def creat_alert_date_doc(self, doc):
+	def creat_extra_notification_log(self, doc):
 		frappe.msgprint(str(doc.name) +"  "+ str(doc.date_notification["label"]))
+
+		enl_doc = frappe.new_doc('Extra Notification Log')
+		enl_doc.subject = doc.doctype + " " + doc.name + " " + doc.date_notification["label"]
+		enl_doc.doctype_name = doc.doctype
+		enl_doc.doc_name = doc.name
+		enl_doc.status = "Open"
+		enl_doc.alert_type = "Date"
+		enl_doc.doc_name = doc.name
+		enl_doc.message = doc.date_notification["label"] + " " + doc.date_notification["days_before_or_after"] + " " + doc.date_notification["days"]
+
+		enl_doc.insert(ignore_permissions=True)
 
 
 def get_context(doc):
@@ -119,7 +130,7 @@ def evaluate_alert(doc, alert):
 		if alert.condition:
 			if not frappe.safe_eval(alert.condition, None, context):
 				return
-		alert.creat_alert_date_doc(doc)
+		alert.creat_extra_notification_log(doc)
 	except TemplateError:
 		frappe.throw(_("Error while evaluating Notification {0}. Please fix your template.").format(alert))
 	except Exception as e:

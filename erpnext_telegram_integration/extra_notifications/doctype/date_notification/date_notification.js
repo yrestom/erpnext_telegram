@@ -51,8 +51,4 @@ frappe.ui.form.on('Date Notification', {
 			});
 		}
 	},
-	view_properties: function(frm) {
-		frappe.route_options = {doc_type:frm.doc.doctype_name};
-		frappe.set_route("Form", "Customize Form");
-	},
 });
