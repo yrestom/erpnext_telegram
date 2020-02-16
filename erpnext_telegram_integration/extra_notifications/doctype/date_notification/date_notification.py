@@ -66,16 +66,15 @@ class DateNotification(Document):
 
 
 	def creat_extra_notification_log(self, doc):
-		frappe.msgprint(str(doc.name) +"  "+ str(doc.date_notification["label"]))
-
+		date_value = str(getattr(doc,doc.date_notification["fieldname"]))
 		enl_doc = frappe.new_doc('Extra Notification Log')
 		enl_doc.subject = doc.doctype + " " + doc.name + " " + doc.date_notification["label"]
 		enl_doc.doctype_name = doc.doctype
 		enl_doc.doc_name = doc.name
 		enl_doc.status = "Open"
-		enl_doc.alert_type = "Date"
+		enl_doc.type = "Date"
 		enl_doc.doc_name = doc.name
-		enl_doc.message = doc.date_notification["label"] + " " + doc.date_notification["days_before_or_after"] + " " + doc.date_notification["days"]
+		enl_doc.message = _(doc.date_notification["label"]) + " " + _("is") + " " + date_value #+ " " + doc.date_notification["days_before_or_after"] + " " + doc.date_notification["days"]
 
 		enl_doc.insert(ignore_permissions=True)
 

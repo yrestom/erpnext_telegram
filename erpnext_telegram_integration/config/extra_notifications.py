@@ -28,6 +28,11 @@ def get_data():
 					"name": "Date Notification",
 					"onboard": 1,
 				},
+				{
+					"type": "doctype",
+					"name": "Extra Notification Log",
+					"onboard": 1,
+				},
 				
 			]
 		},
