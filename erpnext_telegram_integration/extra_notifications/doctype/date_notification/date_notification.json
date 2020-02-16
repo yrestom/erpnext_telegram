@@ -1,0 +1,96 @@
+{
+ "autoname": "field:doctype_name",
+ "creation": "2020-02-13 23:04:32.661941",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "doctype_name",
+  "enable",
+  "section_break_3",
+  "condition",
+  "column_break_6",
+  "html_7",
+  "section_break_7",
+  "get_date_fields",
+  "date_fields"
+ ],
+ "fields": [
+  {
+   "fieldname": "doctype_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "DocType Name",
+   "options": "DocType",
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enable",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enable"
+  },
+  {
+   "fieldname": "get_date_fields",
+   "fieldtype": "Button",
+   "label": "Get Date Fields"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break",
+   "label": "Conditions"
+  },
+  {
+   "fieldname": "section_break_7",
+   "fieldtype": "Section Break",
+   "label": "Fields"
+  },
+  {
+   "fieldname": "date_fields",
+   "fieldtype": "Table",
+   "label": "Date Fields",
+   "options": "Date Fields"
+  },
+  {
+   "fieldname": "condition",
+   "fieldtype": "Code",
+   "ignore_xss_filter": 1,
+   "in_list_view": 1,
+   "label": "Condition"
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "html_7",
+   "fieldtype": "HTML",
+   "label": "Condition Examples",
+   "options": "<p><strong>Condition Examples:</strong></p>\n<pre>doc.status==\"Open\"<br>doc.due_date==nowdate()<br>doc.total &gt; 40000\n</pre>\n"
+  }
+ ],
+ "modified": "2020-02-16 20:13:19.109159",
+ "modified_by": "Administrator",
+ "module": "Extra Notifications",
+ "name": "Date Notification",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

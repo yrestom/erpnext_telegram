@@ -20,6 +20,22 @@ def get_data():
 				
 			]
 		},
+		{
+			"label": _("Date Notifications"),
+			"items": [
+				{
+					"type": "doctype",
+					"name": "Date Notification",
+					"onboard": 1,
+				},
+				{
+					"type": "doctype",
+					"name": "Extra Notification Log",
+					"onboard": 1,
+				},
+				
+			]
+		},
 		
 		
 	]
