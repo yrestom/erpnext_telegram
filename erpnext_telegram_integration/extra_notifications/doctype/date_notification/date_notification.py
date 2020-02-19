@@ -84,7 +84,7 @@ def get_context(doc):
 
 @frappe.whitelist()
 def get_date_fields(doctype_name):
-	fields = frappe.get_doc("DocType", doctype_name).fields
+	fields = frappe.get_meta(doctype_name).fields
 	filed_list = []
 	for d in fields:
 		if d.fieldtype == "Date" or d.fieldtype == "Datetime":
@@ -94,6 +94,19 @@ def get_date_fields(doctype_name):
 				"fieldtype" : d.fieldtype,
 			}
 			filed_list.append(field)
+		if d.fieldtype == "Table":
+			child_fields = frappe.get_meta(d.options).fields
+			for c in child_fields:
+				if c.fieldtype == "Date" or c.fieldtype == "Datetime":
+					frappe.msgprint(str(c.label))
+					field = {	
+						"label":c.label,
+						"fieldname": c.fieldname,
+						"fieldtype" : c.fieldtype,
+						"is_child_field": 1,
+						"child_doctype_name": d.options,
+					}
+					filed_list.append(field)
 	return filed_list
 
 
