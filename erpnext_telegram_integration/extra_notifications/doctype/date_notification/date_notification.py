@@ -40,16 +40,16 @@ class DateNotification(Document):
 			reference_date = add_to_date(nowdate(), days=diff_days)
 			reference_date_start = reference_date + ' 00:00:00.000000'
 			reference_date_end = reference_date + ' 23:59:59.000000'
-
-			doc_list = frappe.get_all(self.doctype_name,
+			if not row_date_field.doctype_name:
+				continue
+			doc_list = frappe.get_all(row_date_field.doctype_name,
 				fields='name',
 				filters=[
 					{ row_date_field.fieldname: ('>=', reference_date_start) },
 					{ row_date_field.fieldname: ('<=', reference_date_end) },
 				])
-
 			for d in doc_list:
-				doc = frappe.get_doc(self.doctype_name, d.name)
+				doc = frappe.get_doc(row_date_field.doctype_name, d.name)
 
 				if self.condition and not frappe.safe_eval(self.condition, None, get_context(doc)):
 					continue
@@ -92,19 +92,21 @@ def get_date_fields(doctype_name):
 				"label":d.label,
 				"fieldname": d.fieldname,
 				"fieldtype" : d.fieldtype,
+				"doctype_name": doctype_name,
 			}
 			filed_list.append(field)
 		if d.fieldtype == "Table":
 			child_fields = frappe.get_meta(d.options).fields
 			for c in child_fields:
 				if c.fieldtype == "Date" or c.fieldtype == "Datetime":
-					frappe.msgprint(str(c.label))
 					field = {	
 						"label":c.label,
 						"fieldname": c.fieldname,
 						"fieldtype" : c.fieldtype,
 						"is_child_field": 1,
-						"child_doctype_name": d.options,
+						"doctype_name": d.options,
+						# "child_doctype_name": c.name,
+						"c":c,
 					}
 					filed_list.append(field)
 	return filed_list

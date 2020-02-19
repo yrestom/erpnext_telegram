@@ -11,16 +11,17 @@ frappe.ui.form.on('Date Notification', {
 
 				frm.clear_table("date_fields");
 				r.message.forEach(d => {
+					console.log(d.c);
 					var child = frm.add_child("date_fields");
 					frappe.model.set_value(child.doctype, child.name, "label", d.label)
 					frappe.model.set_value(child.doctype, child.name, "fieldname", d.fieldname)
 					frappe.model.set_value(child.doctype, child.name, "fieldtype", d.fieldtype)
 					frappe.model.set_value(child.doctype, child.name, "is_child_field", d.is_child_field)
-					frappe.model.set_value(child.doctype, child.name, "child_doctype_name", d.child_doctype_name)
+					frappe.model.set_value(child.doctype, child.name, "doctype_name", d.doctype_name)
 				});
 				cur_frm.refresh_field("date_fields");
 				
-				// console.log(r.message);
+				// console.log(r.message.c);
 			}
 		});
 	},
