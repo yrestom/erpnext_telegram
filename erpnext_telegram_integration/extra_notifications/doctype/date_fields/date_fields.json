@@ -10,7 +10,9 @@
   "fieldname",
   "fieldtype",
   "days_before_or_after",
-  "days"
+  "days",
+  "is_child_field",
+  "doctype_name"
  ],
  "fields": [
   {
@@ -57,10 +59,23 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Enable "
+  },
+  {
+   "default": "0",
+   "fieldname": "is_child_field",
+   "fieldtype": "Check",
+   "label": "Is Child Field",
+   "read_only": 1
+  },
+  {
+   "fieldname": "doctype_name",
+   "fieldtype": "Data",
+   "label": "DocType Name",
+   "read_only": 1
   }
  ],
  "istable": 1,
- "modified": "2020-02-16 18:01:30.034576",
+ "modified": "2020-02-19 04:56:56.120969",
  "modified_by": "Administrator",
  "module": "Extra Notifications",
  "name": "Date Fields",
