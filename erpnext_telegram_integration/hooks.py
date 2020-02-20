@@ -139,11 +139,11 @@ scheduler_events = {
 	"daily": [
 		"erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_notification.telegram_notification.trigger_daily_alerts",
           "erpnext_telegram_integration.erpnext_telegram_integration.doctype.sms_notification.sms_notification.trigger_daily_alerts",
-          "erpnext_telegram_integration.erpnext_telegram_integration.doctype.date_notification.date_notification.trigger_daily_alerts",
+          "erpnext_telegram_integration.extra_notifications.doctype.date_notification.date_notification.trigger_daily_alerts",
 	],
-# 	"hourly": [
-# 		"erpnext_telegram_integration.tasks.hourly"
-# 	],
+	"hourly": [
+		"erpnext_telegram_integration.extra_notifications.doctype.date_notification.date_notification.trigger_daily_alerts",
+	],
 # 	"weekly": [
 # 		"erpnext_telegram_integration.tasks.weekly"
 # 	]
