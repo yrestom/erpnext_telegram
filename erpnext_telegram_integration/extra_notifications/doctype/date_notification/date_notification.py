@@ -4,7 +4,6 @@
 
 from __future__ import unicode_literals
 import frappe
-# import json
 from frappe import _
 from frappe.model.document import Document
 from frappe.utils import nowdate, add_to_date
@@ -48,11 +47,23 @@ class DateNotification(Document):
 					{ row_date_field.fieldname: ('>=', reference_date_start) },
 					{ row_date_field.fieldname: ('<=', reference_date_end) },
 				])
+			child_doctype_name = ""
 			for d in doc_list:
-				doc = frappe.get_doc(row_date_field.doctype_name, d.name)
+				if int(row_date_field.is_child_field) == 0:
+					doc = frappe.get_doc(row_date_field.doctype_name, d.name)
+					date_value = str(getattr(doc,row_date_field.fieldname))
+				else :
+					child_doc = frappe.get_doc(row_date_field.doctype_name, d.name)
+					date_value = str(getattr(child_doc,row_date_field.fieldname))
+					child_doctype_name = str(child_doc.doctype)
+					doc = frappe.get_doc(child_doc.parenttype, child_doc.parent)
+					
 
 				if self.condition and not frappe.safe_eval(self.condition, None, get_context(doc)):
 					continue
+
+				doc.child_doctype_name = child_doctype_name 
+				doc.date_value = date_value
 				doc.date_notification = {
 					"label": row_date_field.label,
 					"fieldname": row_date_field.fieldname,
@@ -66,15 +77,16 @@ class DateNotification(Document):
 
 
 	def creat_extra_notification_log(self, doc):
-		date_value = str(getattr(doc,doc.date_notification["fieldname"]))
+		child_doctype_name = _(doc.child_doctype_name)+ " "
+		date_value = doc.date_value
 		enl_doc = frappe.new_doc('Extra Notification Log')
-		enl_doc.subject = doc.doctype + " " + doc.name + " " + doc.date_notification["label"]
+		enl_doc.subject = _(doc.doctype) +" "+_(doc.name) +" "+ child_doctype_name + _(doc.date_notification["label"]) +" "+ date_value
 		enl_doc.doctype_name = doc.doctype
 		enl_doc.doc_name = doc.name
 		enl_doc.status = "Open"
 		enl_doc.type = "Date"
 		enl_doc.doc_name = doc.name
-		enl_doc.message = _(doc.date_notification["label"]) + " " + _("is") + " " + date_value #+ " " + doc.date_notification["days_before_or_after"] + " " + doc.date_notification["days"]
+		enl_doc.message = child_doctype_name + _(doc.date_notification["label"]) + " " + date_value
 
 		enl_doc.insert(ignore_permissions=True)
 
