@@ -25,6 +25,15 @@ frappe.ui.form.on('Telegram User Settings', {
 				var telegram_token = r.message;
 
 				cur_frm.set_value("telegram_token", telegram_token);
+				frappe.model.get_value('Telegram Settings', {name:frm.doc.telegram_settings}, 'bot_name', (r) => {
+					if (r.bot_name) {
+						navigator.clipboard.writeText(frm.doc.telegram_token).then(()=> {
+							window.open(`https://t.me/${r.bot_name}`, '_blank');
+						});
+					}
+					
+				});
+				
 			}
 		});
 	},
