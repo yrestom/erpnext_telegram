@@ -4,12 +4,11 @@
 
 from __future__ import unicode_literals
 import frappe
-import telegram
+from telegram import Message, Chat, Update, Bot, ParseMode
 from frappe.model.document import Document
 from frappe.utils import get_url_to_form
 from frappe.utils.data import quoted
 from frappe import _
-
 
 class TelegramSettings(Document):
 	pass
@@ -23,12 +22,12 @@ def send_to_telegram(telegram_user, message, reference_doctype=None, reference_n
 	telegram_chat_id = frappe.db.get_value('Telegram User Settings', telegram_user,'telegram_chat_id')
 	telegram_settings = frappe.db.get_value('Telegram User Settings', telegram_user,'telegram_settings')
 	telegram_token = frappe.db.get_value('Telegram Settings', telegram_settings,'telegram_token')
-	bot = telegram.Bot(token=telegram_token)
+	bot = Bot(token=telegram_token)
 
 
 	if reference_doctype and reference_name:
 		doc_url = get_url_to_form(reference_doctype, reference_name)
-		telegram_doc_link = _("See the document at {0}").format(doc_url)
+		telegram_doc_link = _("[Click to open the document]({0})").format(doc_url)
 		if message:
 			message = space + str(message) + space + str(telegram_doc_link)
 			if type(attachment) is str:
@@ -38,12 +37,12 @@ def send_to_telegram(telegram_user, message, reference_doctype=None, reference_n
 					attachment = 1
 			if attachment == 1:
 				attachment_url =get_url_for_telegram(reference_doctype, reference_name)
-				message = message + space +  attachment_url
-			bot.send_message(chat_id=telegram_chat_id, text=message)
-		
+				message = message + space + attachment_url
 	else:
 		message = space + str(message) + space
-		bot.send_message(chat_id=telegram_chat_id, text=message)
+
+	md_message = message.replace('<div>', '').replace('</div>', '').replace('<br>', '').replace('</br>', '\r\n')
+	bot.send_message(chat_id=telegram_chat_id, parse_mode=ParseMode.MARKDOWN, text=md_message)
 
 
 
