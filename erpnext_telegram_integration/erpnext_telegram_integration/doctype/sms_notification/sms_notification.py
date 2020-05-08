@@ -29,7 +29,7 @@ class SMSNotification(Document):
 		validate_template(self.subject)
 		validate_template(self.message)
 		if not validate_sms_settings():
-			frappe.msgprint(_("Pleas setup SMS Settings"))
+			frappe.msgprint(_("Please setup SMS Settings"))
 		
 
 		if self.event in ("Days Before", "Days After") and not self.date_changed:
