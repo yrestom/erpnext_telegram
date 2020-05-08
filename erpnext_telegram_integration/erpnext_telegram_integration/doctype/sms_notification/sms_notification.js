@@ -60,6 +60,7 @@ frappe.ui.form.on('SMS Notification', {
 				}
 			}
 		});
+		frm.toggle_reqd("recipients", !frm.doc.dynamic_recipients ? 1:0);
 	},
 	refresh: function(frm) {
 		frappe.notification.setup_fieldname_select(frm);
