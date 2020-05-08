@@ -149,14 +149,10 @@ class SMSNotification(Document):
 					msg = message,
 					)
 
-	def get_dynamic_recipients(self, doc=None):
+	def get_dynamic_recipients(self, doc):
 		recipients_no_list =[]
 		if self.dynamic_recipients:
 			fields = get_doc_fields(self.document_type)
-			if not doc:
-				doc= {}
-				doc["name"] = "SAL-ORD-2020-00001"
-				doc["customer"] = "Mega Company"
 			for d in fields:
 				if doc.get(d["fieldname"]):
 					default_contact = get_default_contact(d["field_options"],doc.get(d["fieldname"]))
