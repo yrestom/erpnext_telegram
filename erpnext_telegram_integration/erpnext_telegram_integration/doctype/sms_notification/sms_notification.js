@@ -93,5 +93,8 @@ frappe.ui.form.on('SMS Notification', {
 			});
 		}
 	},
+	dynamic_recipients: function(frm) {
+		frm.toggle_reqd("recipients", !frm.doc.dynamic_recipients ? 1:0);
+	}
 	
 });

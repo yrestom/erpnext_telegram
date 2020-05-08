@@ -11,6 +11,8 @@ from frappe.utils.jinja import validate_template
 from frappe.modules.utils import export_module_json, get_doc_module
 from six import string_types
 from frappe.core.doctype.sms_settings.sms_settings import send_sms
+from extra_features.tools import print_out
+from frappe.contacts.doctype.contact.contact import get_default_contact, get_contact_details
 
 class SMSNotification(Document):
 	def onload(self):
@@ -26,6 +28,8 @@ class SMSNotification(Document):
 	def validate(self):
 		validate_template(self.subject)
 		validate_template(self.message)
+		if not validate_sms_settings():
+			frappe.msgprint(_("Pleas setup SMS Settings"))
 		
 
 		if self.event in ("Days Before", "Days After") and not self.date_changed:
@@ -138,13 +142,36 @@ class SMSNotification(Document):
 			message= frappe.render_template(self.subject, context) +space
 			message=  message + frappe.render_template(self.message, context)
 			recipients_no_list = self.get_recipients_no_list()
-			send_sms(
-				receiver_list = recipients_no_list,
-				msg = message,
-				)
+			recipients_no_list.extend(self.get_dynamic_recipients(doc))
+			if validate_sms_settings():
+				send_sms(
+					receiver_list = recipients_no_list,
+					msg = message,
+					)
+
+	def get_dynamic_recipients(self, doc=None):
+		recipients_no_list =[]
+		if self.dynamic_recipients:
+			fields = get_doc_fields(self.document_type)
+			if not doc:
+				doc= {}
+				doc["name"] = "SAL-ORD-2020-00001"
+				doc["customer"] = "Mega Company"
+			for d in fields:
+				if doc.get(d["fieldname"]):
+					default_contact = get_default_contact(d["field_options"],doc.get(d["fieldname"]))
+					contact_details = get_contact_details(default_contact)
+					if contact_details.get("contact_mobile"):
+						recipients_no_list.append(contact_details.get("contact_mobile"))
+		
+		return recipients_no_list
+
+			
 
 
 	def get_recipients_no_list(self):
+		if not self.recipients: 
+			return []
 		recipients_no_list = []
 		for contact in self.recipients:
 			if contact.mobile_no:
@@ -295,3 +322,27 @@ def evaluate_alert(doc, alert, event):
 def get_context(doc):
 	return {"doc": doc, "nowdate": nowdate, "frappe.utils": frappe.utils}
 
+
+def get_doc_fields(doctype_name):
+	fields = frappe.get_meta(doctype_name).fields
+	filed_list = []
+	field_names =["Customer","Supplier","Student","Employee"]
+	for d in fields:
+		if d.fieldtype == "Link" and  d.options in field_names:
+			field = {	
+				"label":d.label,
+				"fieldname": d.fieldname,
+				"fieldtype" : d.fieldtype,
+				"field_options" : d.options,
+				"doctype_name": doctype_name,
+			}
+			filed_list.append(field)
+	return filed_list
+
+
+def validate_sms_settings():
+	sms_setting = frappe.get_single("SMS Settings")
+	if sms_setting.sms_gateway_url:
+		return True
+	else:
+		return False
