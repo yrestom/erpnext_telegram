@@ -12,6 +12,7 @@ from frappe.utils.jinja import validate_template
 from frappe.modules.utils import export_module_json, get_doc_module
 from six import string_types
 from erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_settings.telegram_settings import send_to_telegram
+from extra_features.tools import print_out
 
 class TelegramNotification(Document):
 	def onload(self):
@@ -132,20 +133,39 @@ def get_context(context):
 				doc.set(self.set_property_after_alert, self.property_value)
 
 
+	def get_dynamic_recipients(self, doc):
+		recipients_telegram_user_list =[]
+		if self.dynamic_recipients:
+			fields = get_doc_fields(self.document_type)
+			for d in fields:
+				telegram_user_list = frappe.get_all('Telegram User Settings', filters={'party': d["field_options"], 'telegram_user': doc.get(d["fieldname"])}, fields=['name', 'telegram_settings','telegram_user'])
+				for i in telegram_user_list:
+					recipients_telegram_user_list.append(i.name)
+		return recipients_telegram_user_list
+
+
 	def send_a_telegram_msg(self, doc, context):
-			space = "\n" * 2
-			message= frappe.render_template(self.subject, context) +space
-			message=  message + frappe.render_template(self.message, context)
-			attachment = self.get_attachment(doc)
-			# frappe.msgprint(str(attachment))
-			
+		recipients_telegram_user_list = []
+		if self.telegram_user:
+			recipients_telegram_user_list.append(self.telegram_user)
+		recipients_telegram_user_list.extend(self.get_dynamic_recipients(doc))
+		space = "\n" * 2
+		message= frappe.render_template(self.subject, context) +space
+		message=  message + frappe.render_template(self.message, context)
+		attachment = self.get_attachment(doc)
+		for telegram_user in recipients_telegram_user_list:
 			send_to_telegram(
-				telegram_user=self.telegram_user,
+				telegram_user=telegram_user,
 				message= message,
 				reference_doctype = doc.doctype,
 				reference_name = doc.name,
 				attachment = attachment)
-
+			
+			doc.message_notification = message
+			doc.from_user = frappe.session.user
+			doc.party_type = frappe.get_value('Telegram User Settings',telegram_user,'party')
+			doc.to_party = frappe.get_value('Telegram User Settings',telegram_user,'telegram_user')
+			creat_extra_notification_log(doc)
 
 	def get_attachment(self, doc):
 		""" check print settings are attach the pdf """
@@ -315,3 +335,36 @@ def evaluate_alert(doc, alert, event):
 def get_context(doc):
 	return {"doc": doc, "nowdate": nowdate, "frappe.utils": frappe.utils}
 
+
+def get_doc_fields(doctype_name):
+	fields = frappe.get_meta(doctype_name).fields
+	filed_list = []
+	field_names =["Customer","Supplier","Student","Employee"]
+	for d in fields:
+		if d.fieldtype == "Link" and  d.options in field_names:
+			field = {	
+				"label":d.label,
+				"fieldname": d.fieldname,
+				"fieldtype" : d.fieldtype,
+				"field_options" : d.options,
+				"doctype_name": doctype_name,
+			}
+			filed_list.append(field)
+	return filed_list
+
+
+
+def creat_extra_notification_log(doc):
+		enl_doc = frappe.new_doc('Extra Notification Log')
+		enl_doc.subject = _(doc.doctype) +" "+_(doc.name)
+		enl_doc.doctype_name = doc.doctype
+		enl_doc.doc_name = doc.name
+		enl_doc.status = "Closed"
+		enl_doc.type = "Telegram"
+		enl_doc.doc_name = doc.name
+		enl_doc.message =_(doc.message_notification)
+		enl_doc.party_type = doc.party_type
+		enl_doc.to_party = doc.to_party
+		enl_doc.from_user = doc.from_user
+
+		enl_doc.insert(ignore_permissions=True)

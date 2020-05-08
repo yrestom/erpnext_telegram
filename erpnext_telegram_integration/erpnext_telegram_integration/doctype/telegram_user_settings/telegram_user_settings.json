@@ -79,7 +79,7 @@
    "label": "Generate Telegram Token"
   }
  ],
- "modified": "2019-12-14 14:37:53.302748",
+ "modified": "2020-05-09 00:02:07.022847",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "Telegram User Settings",
@@ -95,6 +95,14 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "if_owner": 1,
+   "read": 1,
+   "role": "All",
    "write": 1
   }
  ],
