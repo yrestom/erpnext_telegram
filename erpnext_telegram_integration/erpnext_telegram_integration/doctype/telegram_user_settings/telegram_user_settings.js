@@ -27,8 +27,8 @@ frappe.ui.form.on('Telegram User Settings', {
 				cur_frm.set_value("telegram_token", telegram_token);
 				frappe.model.get_value('Telegram Settings', {name:frm.doc.telegram_settings}, 'bot_name', (r) => {
 					if (r.bot_name) {
-						frappe.show_alert({message:__('Telegram Token copied to your clipboard!'), indicator:'green'}, 20);
 						navigator.clipboard.writeText(frm.doc.telegram_token).then(()=> {
+							frappe.show_alert({message:__('Telegram Token copied to your clipboard!'), indicator:'green'}, 20);
 							window.open(`https://t.me/${r.bot_name}`, '_blank');
 						});
 					}
