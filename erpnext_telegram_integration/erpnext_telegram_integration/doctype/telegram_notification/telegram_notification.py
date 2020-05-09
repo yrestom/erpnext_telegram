@@ -12,7 +12,6 @@ from frappe.utils.jinja import validate_template
 from frappe.modules.utils import export_module_json, get_doc_module
 from six import string_types
 from erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_settings.telegram_settings import send_to_telegram
-from extra_features.tools import print_out
 
 class TelegramNotification(Document):
 	def onload(self):
