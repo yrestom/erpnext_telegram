@@ -11,7 +11,6 @@ from frappe.utils.jinja import validate_template
 from frappe.modules.utils import export_module_json, get_doc_module
 from six import string_types
 from frappe.core.doctype.sms_settings.sms_settings import send_sms
-from extra_features.tools import print_out
 from frappe.contacts.doctype.contact.contact import get_default_contact, get_contact_details
 
 class SMSNotification(Document):
