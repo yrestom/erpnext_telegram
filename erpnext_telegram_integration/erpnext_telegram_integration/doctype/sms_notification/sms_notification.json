@@ -12,6 +12,7 @@
   "telegram_user",
   "sms_recipients_section",
   "recipients",
+  "dynamic_recipients",
   "filters",
   "subject",
   "document_type",
@@ -246,17 +247,22 @@
    "fieldname": "recipients",
    "fieldtype": "Table",
    "label": "Recipients",
-   "options": "SMS Contact List",
-   "reqd": 1
+   "options": "SMS Contact List"
   },
   {
    "fieldname": "sms_recipients_section",
    "fieldtype": "Section Break",
    "label": "SMS Recipients"
+  },
+  {
+   "default": "0",
+   "fieldname": "dynamic_recipients",
+   "fieldtype": "Check",
+   "label": "Dynamic Recipients"
   }
  ],
  "icon": "fa fa-envelope",
- "modified": "2020-02-07 23:09:44.034769",
+ "modified": "2020-05-08 23:06:37.254428",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "SMS Notification",
