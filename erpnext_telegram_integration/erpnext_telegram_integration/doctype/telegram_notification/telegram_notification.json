@@ -10,6 +10,7 @@
   "column_break_2",
   "channel",
   "telegram_user",
+  "dynamic_recipients",
   "filters",
   "subject",
   "document_type",
@@ -237,13 +238,18 @@
    "depends_on": "eval:doc.channel=='Telegram'",
    "fieldname": "telegram_user",
    "fieldtype": "Link",
-   "label": "Telegram Channel",
-   "options": "Telegram User Settings",
-   "reqd": 1
+   "label": "Telegram User",
+   "options": "Telegram User Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "dynamic_recipients",
+   "fieldtype": "Check",
+   "label": "Dynamic Recipients"
   }
  ],
  "icon": "fa fa-envelope",
- "modified": "2019-12-10 13:50:21.814984",
+ "modified": "2020-05-09 00:14:24.151708",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "Telegram Notification",
@@ -256,6 +262,42 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "HR Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
    "share": 1,
    "write": 1
   }

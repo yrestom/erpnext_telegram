@@ -60,6 +60,7 @@ frappe.ui.form.on('Telegram Notification', {
 				}
 			}
 		});
+		frm.toggle_reqd("telegram_user", !frm.doc.dynamic_recipients ? 1:0);
 	},
 	refresh: function(frm) {
 		frappe.notification.setup_fieldname_select(frm);
@@ -93,5 +94,8 @@ frappe.ui.form.on('Telegram Notification', {
 			});
 		}
 	},
+	dynamic_recipients: function(frm) {
+		frm.toggle_reqd("telegram_user", !frm.doc.dynamic_recipients ? 1:0);
+	}
 	
 });
