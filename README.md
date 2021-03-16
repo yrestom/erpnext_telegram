@@ -60,7 +60,7 @@ In Erpnext Telegram Integration
    3. Choose Telegram Settings.
    4. If it's a group check "Is Group Chat".
    5. Press "Generate Telegram Token" then the app will copy the "Telegram Token" to clipboard and will open a new window into the browser to the Bot web page.
-   6. Past "Telegram Token" in the Telegram Bot or if it is a Group Chat past in the group after adding the Bot.
+   6. Paste "Telegram Token" in the Telegram Bot or if it is a Group Chat paste in the group after adding the Bot.
    7. Press "Get Chat ID" And if everything is ok it will get the chat ID.
    8. Press Save.
 
