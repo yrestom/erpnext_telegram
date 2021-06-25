@@ -28,7 +28,7 @@ Telegram Integration and Extra Notifications For Frappe & Erpnext to sending fas
 
 2. `bench get-app erpnext_telegram_integration https://github.com/yrestom/erpnext_telegram.git`
 
-3. `bench install-app erpnext_telegram_integration`
+3. `bench --site [your.site.name] install-app erpnext_telegram_integration`
 
 4. `bench build`
 
