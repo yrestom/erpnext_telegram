@@ -5,7 +5,7 @@ $(document).on('app_ready', function() {
 
         if (route[0] == "Form") {
             frappe.ui.form.on(route[1], {
-                refresh: function (frm) {
+               function (frm) {
                     cur_frm.page.add_menu_item(__("Send To Telegram"), function() {
                         var user_name = frappe.user.name;
                         var user_full_name = frappe.session.user_fullname;
