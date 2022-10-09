@@ -4,7 +4,7 @@ $(document).on('app_ready', function() {
         var route = frappe.get_route();
 
         if (route[0] == "Form") {
-            frappe.ui.form.on(route[1], {
+            frappe.ui.form.on(route[1], 
                function (frm) {
                     cur_frm.page.add_menu_item(__("Send To Telegram"), function() {
                         var user_name = frappe.user.name;
@@ -65,8 +65,7 @@ $(document).on('app_ready', function() {
                         dialog.fields_dict.ht.$wrapper.html(reference_name);
                         dialog.show();
                     });
-                }
-            })
+                })
  
 
         }
