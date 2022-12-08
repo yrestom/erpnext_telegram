@@ -316,8 +316,9 @@ def run_telegram_notifications(doc, method):
 
     def _evaluate_alert(alert):
         if not alert.name in doc.flags.tel_notifications_executed:
-            evaluate_alert(doc, alert.name, alert.event)
-            doc.flags.tel_notifications_executed.append(alert.name)
+            if frappe.db.exists("Telegram Notification", alert.name):
+               evaluate_alert(doc, alert.name, alert.event)
+               doc.flags.tel_notifications_executed.append(alert.name)
 
     event_map = {
         "on_update": "Save",
