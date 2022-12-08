@@ -50,6 +50,9 @@ def get_chat_id_button(telegram_token, telegram_settings):
 	bot = telegram.Bot(token = telegram_token_bot)
 	updates = bot.get_updates(limit=100)
 	for u in updates:
+		# ignore messages without text
+		if not u.message or not u.message.text :
+			continue
 		message = u.message.text
 		chat_id = u.message.chat_id
 		# frappe.msgprint(str(message) + " >>>>>> "+ str(chat_id)) 
