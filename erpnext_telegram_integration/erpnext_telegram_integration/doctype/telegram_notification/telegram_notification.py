@@ -183,12 +183,10 @@ def get_context(context):
                     else:
                         break
 
-                filters = (
-                    {
+                filters = {
                         "party": party,
                         "telegram_user": doc.get(d["fieldname"]),
-                    },
-                )
+                    }
                 telegram_user_list = frappe.get_all(
                     "Telegram User Settings",
                     filters=filters,
