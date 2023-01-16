@@ -19,12 +19,12 @@ frappe.ui.form.on('Telegram User Settings', {
 	generate_telegram_token: function (frm) {
 		frappe.call({
 			method: 'erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_user_settings.telegram_user_settings.generate_telegram_token',
-			args: { "is_group_chat": cur_frm.doc.is_group_chat },
+			args: { "is_group_chat": frm.doc.is_group_chat },
 			callback: (r) => {
 				// console.log(r.message[0]);
 				var telegram_token = r.message;
 
-				cur_frm.set_value("telegram_token", telegram_token);
+				frm.set_value("telegram_token", telegram_token);
 				frappe.model.get_value('Telegram Settings', { name: frm.doc.telegram_settings }, 'bot_name', (r) => {
 					if (r.bot_name) {
 						navigator.clipboard.writeText(frm.doc.telegram_token).then(() => {
@@ -40,9 +40,21 @@ frappe.ui.form.on('Telegram User Settings', {
 	},
 
 	get_chat_id: function (frm) {
+		if (frm.is_dirty() || frm.is_new()) {
+			frappe.throw(__("Please save the document first!"));
+			return;
+		}
+		if (!frm.doc.telegram_token) {
+			frappe.throw(__("Please generate a Telegram Token first!"));
+			return;
+		}
+		if (!frm.doc.telegram_settings) {
+			frappe.throw(__("Please select a Telegram Settings first!"));
+			return;
+		}
 		frappe.call({
 			method: 'erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_user_settings.telegram_user_settings.get_chat_id_button',
-			args: { "telegram_token": frm.doc.telegram_token.toString(), "telegram_settings": frm.doc.telegram_settings },
+			args: { "telegram_token": frm.doc.telegram_token, "telegram_settings": frm.doc.telegram_settings },
 			callback: (r) => {
 				frm.set_value("telegram_chat_id", r.message);
 				refresh_field("telegram_chat_id");

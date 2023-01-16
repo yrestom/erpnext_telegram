@@ -1,4 +1,5 @@
 {
+ "actions": [],
  "allow_rename": 1,
  "autoname": "format:{telegram_user}-{telegram_settings}",
  "creation": "2019-12-01 02:31:10.562643",
@@ -22,14 +23,18 @@
   {
    "fieldname": "party",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Party",
-   "options": "DocType"
+   "options": "DocType",
+   "reqd": 1
   },
   {
    "fieldname": "telegram_user",
    "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
    "label": "Telegram User",
-   "options": "party"
+   "options": "party",
+   "reqd": 1
   },
   {
    "fieldname": "telegram_user_name",
@@ -60,8 +65,10 @@
   {
    "fieldname": "telegram_settings",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Telegram Settings",
-   "options": "Telegram Settings"
+   "options": "Telegram Settings",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -79,10 +86,12 @@
    "label": "Generate Telegram Token"
   }
  ],
- "modified": "2020-05-09 00:02:07.022847",
+ "links": [],
+ "modified": "2023-01-16 14:21:40.062556",
  "modified_by": "Administrator",
  "module": "Erpnext Telegram Integration",
  "name": "Telegram User Settings",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -109,5 +118,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

@@ -53,7 +53,7 @@ def get_chat_id_button(telegram_token, telegram_settings):
 	if chat_id:
 		return str(chat_id)
 	else:
-		frappe.msgprint(_("No chat id found for this token, please check the token and make sure you are pasting it in the right chat boot or group in telegram"))
+		frappe.msgprint(_("No chat id found for this token, please check the token and make sure you are pasting it in the right chat boot or group in Telegram"))
 	
 async def get_chat_id(telegram_token_bot, telegram_token):
 	bot = telegram.Bot(token = telegram_token_bot)
