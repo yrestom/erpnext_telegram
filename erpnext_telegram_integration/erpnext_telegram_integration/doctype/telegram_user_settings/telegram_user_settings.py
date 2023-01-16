@@ -4,10 +4,12 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe.model.document import Document
+import asyncio
 import telegram
 import binascii
 import os
+from frappe.model.document import Document
+from frappe import _
 
 
 class TelegramUserSettings(Document):
@@ -47,15 +49,22 @@ def generate_telegram_token(is_group_chat):
 @frappe.whitelist()
 def get_chat_id_button(telegram_token, telegram_settings):
 	telegram_token_bot = frappe.db.get_value('Telegram Settings', telegram_settings,'telegram_token')
-	bot = telegram.Bot(token = telegram_token_bot)
-	updates = bot.get_updates(limit=100)
-	for u in updates:
-		# ignore messages without text
-		if not u.message or not u.message.text :
-			continue
-		message = u.message.text
-		chat_id = u.message.chat_id
-		# frappe.msgprint(str(message) + " >>>>>> "+ str(chat_id)) 
-		if telegram_token == message:
-			return chat_id
+	chat_id = asyncio.run(get_chat_id(telegram_token_bot, telegram_token))
+	if chat_id:
+		return str(chat_id)
+	else:
+		frappe.msgprint(_("No chat id found for this token, please check the token and make sure you are pasting it in the right chat boot or group in telegram"))
 	
+async def get_chat_id(telegram_token_bot, telegram_token):
+	bot = telegram.Bot(token = telegram_token_bot)
+	async with bot:
+		updates = await bot.get_updates(limit=100)
+		for u in updates:
+			# ignore messages without text
+			if not u.message or not u.message.text :
+				continue
+			message = u.message.text
+			chat_id = u.message.chat_id
+			if telegram_token == message:
+				print("chat_id >>>>>> "+ str(chat_id))
+				return chat_id

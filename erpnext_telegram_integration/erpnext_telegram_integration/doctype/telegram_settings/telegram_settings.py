@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 import telegram
+import asyncio
 from frappe.model.document import Document
 from frappe.utils import get_url_to_form
 from frappe.utils.data import quoted
@@ -41,11 +42,11 @@ def send_to_telegram(telegram_user, message, reference_doctype=None, reference_n
 			if attachment == 1:
 				attachment_url =get_url_for_telegram(reference_doctype, reference_name)
 				message = message + space +  attachment_url
-			bot.send_message(chat_id=telegram_chat_id, text=message)
+			asyncio.run(bot.send_message(chat_id=telegram_chat_id, text=message))
 		
 	else:
 		message = space + str(message) + space
-		bot.send_message(chat_id=telegram_chat_id, text=message)
+		asyncio.run(bot.send_message(chat_id=telegram_chat_id, text=message))
 
 
 
