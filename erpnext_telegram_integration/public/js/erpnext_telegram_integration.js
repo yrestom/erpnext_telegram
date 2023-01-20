@@ -54,6 +54,7 @@ $(document).on('app_ready', function() {
                                             reference_doctype: reference_doctype,
                                             reference_name: reference_name,
                                             content: comment_message,
+                                            comment_by: frappe.session.user_fullname,
                                             comment_email: frappe.session.user
                                         },
                                     });
