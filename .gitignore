@@ -4,3 +4,4 @@
 *.swp
 tags
 erpnext_telegram_integration/docs/current
+__pycache__/
