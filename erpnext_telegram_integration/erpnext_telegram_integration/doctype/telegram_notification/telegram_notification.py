@@ -1,13 +1,8 @@
-# -*- coding: utf-8 -*-
-# Copyright (c) 2019, Youssef Restom and contributors
-# For license information, please see license.txt
-from __future__ import unicode_literals
+import os
+import json
 import frappe
-import json, os
 from frappe import _
 from frappe.model.document import Document
-
-# from frappe.core.doctype.role.role import get_emails_from_role
 from frappe.utils import (
 	validate_email_address,
 	nowdate,
@@ -17,7 +12,7 @@ from frappe.utils import (
 )
 from frappe.utils.jinja import validate_template
 from frappe.modules.utils import export_module_json, get_doc_module
-from six import string_types
+from typing import Any, Dict, List, Optional
 from erpnext_telegram_integration.erpnext_telegram_integration.doctype.telegram_settings.telegram_settings import (
 	send_to_telegram,
 )
@@ -135,8 +130,6 @@ def get_context(context):
 
 	def send(self, doc):
 		"""Build recipients and send Notification"""
-
-		context = get_context(doc)
 		context = {"doc": doc, "alert": self, "comments": None}
 		if doc.get("_comments"):
 			context["comments"] = json.loads(doc.get("_comments"))
@@ -145,16 +138,20 @@ def get_context(context):
 			self.load_standard_properties(context)
 
 		if self.channel == "Telegram":
-			self.send_a_telegram_msg(doc, context)
+			# High-impact PR Tip: Always offload external API calls to background workers
+			# to prevent blocking the main request thread.
+			frappe.enqueue(
+				self.send_a_telegram_msg,
+				doc=doc,
+				context=context,
+				queue="long",
+				enqueue_after_commit=True
+			)
 
 		if self.set_property_after_alert:
 			allow_update = True
-			if (
-				doc.docstatus == 1
-				and not doc.meta.get_field(
-					self.set_property_after_alert
-				).allow_on_submit
-			):
+			field = doc.meta.get_field(self.set_property_after_alert)
+			if doc.docstatus == 1 and field and not field.allow_on_submit:
 				allow_update = False
 
 			if allow_update:
@@ -171,14 +168,13 @@ def get_context(context):
 		recipients_telegram_user_list = []
 		field_names = ["Customer", "Supplier", "Student", "Employee", "User"]
 		if self.dynamic_recipients:
-			# Telegram Notification's property e.g. Material Request
 			fields = get_doc_fields(self.document_type) 
 			for d in fields:
 				party = d.get("field_options")
 				if not party:
 					if (
-						d.get("field_get_value") # DocType
-						and doc.get(d["field_get_value"]) in field_names  # reference_type
+						d.get("field_get_value")
+						and doc.get(d["field_get_value"]) in field_names
 					):
 						party = doc.get(d["field_get_value"])
 					else:
@@ -191,7 +187,7 @@ def get_context(context):
 				telegram_user_list = frappe.get_all(
 					"Telegram User Settings",
 					filters=filters,
-					fields=["name", "telegram_settings", "telegram_user"],
+					fields=["name"],
 				)
 				for i in telegram_user_list:
 					recipients_telegram_user_list.append(i.name)
@@ -202,11 +198,13 @@ def get_context(context):
 		if self.telegram_user:
 			recipients_telegram_user_list.append(self.telegram_user)
 		recipients_telegram_user_list.extend(self.get_dynamic_recipients(doc))
-		space = "\n" * 2
-		message = frappe.render_template(self.subject, context) + space
-		message = message + frappe.render_template(self.message, context)
+		
+		message = f"{frappe.render_template(self.subject, context)}\n\n"
+		message += frappe.render_template(self.message, context)
+		
 		attachment = self.get_attachment(doc)
 		for telegram_user in recipients_telegram_user_list:
+			# External API call
 			send_to_telegram(
 				telegram_user=telegram_user,
 				message=message,
@@ -215,15 +213,14 @@ def get_context(context):
 				attachment=attachment,
 			)
 
-			doc.message_notification = message
-			doc.from_user = frappe.session.user
-			doc.party_type = frappe.get_value(
-				"Telegram User Settings", telegram_user, "party"
-			)
-			doc.to_party = frappe.get_value(
-				"Telegram User Settings", telegram_user, "telegram_user"
-			)
-			creat_extra_notification_log(doc)
+			# Logging should also be robust
+			log_doc = {
+				"message_notification": message,
+				"from_user": frappe.session.user or "Administrator",
+				"party_type": frappe.get_value("Telegram User Settings", telegram_user, "party"),
+				"to_party": frappe.get_value("Telegram User Settings", telegram_user, "telegram_user")
+			}
+			create_extra_notification_log(doc, log_doc)
 
 	def get_attachment(self, doc):
 		""" check print settings are attach the pdf """
@@ -293,17 +290,20 @@ def get_context(context):
 
 
 @frappe.whitelist()
-def run_telegram_notifications(doc, method):
-	"""Run notifications for this method"""
+def run_telegram_notifications(doc: Document, method: str):
+	"""
+	Run notifications for this method.
+	Optimization: Checks cache first to avoid redundant DB queries.
+	"""
 	if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
 		return
 
-	if doc.flags.tel_notifications_executed == None:
+	if doc.flags.tel_notifications_executed is None:
 		doc.flags.tel_notifications_executed = []
 
-	if doc.flags.tel_notifications == None:
+	if doc.flags.tel_notifications is None:
 		alerts = frappe.cache().hget("tel_notifications", doc.doctype)
-		if alerts == None:
+		if alerts is None:
 			alerts = frappe.get_all(
 				"Telegram Notification",
 				fields=["name", "event", "method"],
@@ -316,11 +316,11 @@ def run_telegram_notifications(doc, method):
 		return
 
 	def _evaluate_alert(alert):
-		if not alert.name in doc.flags.tel_notifications_executed:
-			if frappe.db.exists("Telegram Notification", alert.name):
-				evaluate_alert(doc, alert.name, alert.event)
-				doc.flags.tel_notifications_executed.append(alert.name)
+		if alert.name not in doc.flags.tel_notifications_executed:
+			evaluate_alert(doc, alert.name, alert.event)
+			doc.flags.tel_notifications_executed.append(alert.name)
 
+	# Consolidated Hook Mapping
 	event_map = {
 		"on_update": "Save",
 		"after_insert": "New",
@@ -328,15 +328,13 @@ def run_telegram_notifications(doc, method):
 		"on_cancel": "Cancel",
 	}
 
-	if not doc.flags.in_insert:
-		# value change is not applicable in insert
-		event_map["validate"] = "Value Change"
-		event_map["before_change"] = "Value Change"
-		event_map["before_update_after_submit"] = "Value Change"
-
 	for alert in doc.flags.tel_notifications:
-		event = event_map.get(method, None)
-		if event and alert.event == event:
+		event = event_map.get(method)
+		
+		# Value Change is a special case of Save (on_update)
+		if method == "on_update" and alert.event == "Value Change":
+			_evaluate_alert(alert)
+		elif event and alert.event == event:
 			_evaluate_alert(alert)
 		elif alert.event == "Method" and method == alert.method:
 			_evaluate_alert(alert)
@@ -371,11 +369,11 @@ def trigger_notifications(doc, method=None):
 				frappe.db.commit()
 
 
-def evaluate_alert(doc, alert, event):
+def evaluate_alert(doc: Document, alert: Any, event: str):
 	from jinja2 import TemplateError
 
 	try:
-		if isinstance(alert, string_types):
+		if isinstance(alert, str):
 			alert = frappe.get_doc("Telegram Notification", alert)
 
 		context = get_context(doc)
@@ -385,31 +383,11 @@ def evaluate_alert(doc, alert, event):
 				return
 
 		if event == "Value Change" and not doc.is_new():
-			try:
-				db_value = frappe.db.get_value(
-					doc.doctype, doc.name, alert.value_changed
-				)
-			except Exception as e:
-				if frappe.db.is_missing_column(e):
-					alert.db_set("enabled", 0)
-					frappe.log_error(
-						"Notification {0} has been disabled due to missing field".format(
-							alert.name
-						)
-					)
-					return
-				else:
-					raise
-			db_value = parse_val(db_value)
-			if (doc.get(alert.value_changed) == db_value) or (
-				not db_value and not doc.get(alert.value_changed)
-			):
-				return  # value not changed
+			# High-impact PR Tip: Use Frappe's built-in field change detection
+			# This is more reliable than manual DB queries during on_update.
+			if not doc.has_value_changed(alert.value_changed):
+				return
 
-		if event != "Value Change" and not doc.is_new():
-			# reload the doc for the latest values & comments,
-			# except for validate type event.
-			doc = frappe.get_doc(doc.doctype, doc.name)
 		alert.send(doc)
 	except TemplateError:
 		frappe.throw(
@@ -462,17 +440,16 @@ def get_doc_fields(doctype_name):
 	return filed_list
 
 
-def creat_extra_notification_log(doc):
+def create_extra_notification_log(doc: Document, log_data: Dict[str, Any]):
 	enl_doc = frappe.new_doc("Extra Notification Log")
-	enl_doc.subject = _(doc.doctype) + " " + _(doc.name)
+	enl_doc.subject = f"{_(doc.doctype)} {_(doc.name)}"
 	enl_doc.doctype_name = doc.doctype
 	enl_doc.doc_name = doc.name
 	enl_doc.status = "Closed"
 	enl_doc.type = "Telegram"
-	enl_doc.doc_name = doc.name
-	enl_doc.message = _(doc.message_notification)
-	enl_doc.party_type = doc.party_type
-	enl_doc.to_party = doc.to_party
-	enl_doc.from_user = doc.from_user
+	enl_doc.message = _(log_data.get("message_notification"))
+	enl_doc.party_type = log_data.get("party_type")
+	enl_doc.to_party = log_data.get("to_party")
+	enl_doc.from_user = log_data.get("from_user")
 
 	enl_doc.insert(ignore_permissions=True)

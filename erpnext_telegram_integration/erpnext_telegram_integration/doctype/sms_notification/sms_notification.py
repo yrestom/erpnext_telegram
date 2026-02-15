@@ -15,7 +15,7 @@ from frappe.utils import (
 )
 from frappe.utils.jinja import validate_template
 from frappe.modules.utils import export_module_json, get_doc_module
-from six import string_types
+from typing import Any, Dict, List, Optional
 from frappe.core.doctype.sms_settings.sms_settings import send_sms
 from frappe.contacts.doctype.contact.contact import (
     get_default_contact,
@@ -62,14 +62,12 @@ class SMSNotification(Document):
             if not os.path.exists(path + ".py"):
                 with open(path + ".py", "w") as f:
                     f.write(
-                        """from __future__ import unicode_literals
+                        """import frappe
 
-							import frappe
-
-							def get_context(context):
-								# do your magic here
-								pass
-							"""
+def get_context(context):
+	# do your magic here
+	pass
+"""
                     )
 
     def validate_standard(self):
@@ -138,7 +136,6 @@ class SMSNotification(Document):
     def send(self, doc):
         """Build recipients and send Notification"""
 
-        context = get_context(doc)
         context = {"doc": doc, "alert": self, "comments": None}
         if doc.get("_comments"):
             context["comments"] = json.loads(doc.get("_comments"))
@@ -147,16 +144,18 @@ class SMSNotification(Document):
             self.load_standard_properties(context)
 
         if self.channel == "SMS":
-            self.send_sms_msg(doc, context)
+            frappe.enqueue(
+                self.send_sms_msg,
+                doc=doc,
+                context=context,
+                queue="default",
+                enqueue_after_commit=True
+            )
 
         if self.set_property_after_alert:
             allow_update = True
-            if (
-                doc.docstatus == 1
-                and not doc.meta.get_field(
-                    self.set_property_after_alert
-                ).allow_on_submit
-            ):
+            field = doc.meta.get_field(self.set_property_after_alert)
+            if doc.docstatus == 1 and field and not field.allow_on_submit:
                 allow_update = False
 
             if allow_update:
@@ -170,9 +169,8 @@ class SMSNotification(Document):
                 doc.set(self.set_property_after_alert, self.property_value)
 
     def send_sms_msg(self, doc, context):
-        space = "\n"
-        message = frappe.render_template(self.subject, context) + space
-        message = message + frappe.render_template(self.message, context)
+        message = f"{frappe.render_template(self.subject, context)}\n"
+        message += frappe.render_template(self.message, context)
         recipients_no_list = self.get_recipients_no_list()
         recipients_no_list.extend(self.get_dynamic_recipients(doc))
         if validate_sms_settings():
@@ -246,52 +244,54 @@ class SMSNotification(Document):
 
 
 @frappe.whitelist()
-def run_sms_notifications(doc, method):
-    """Run notifications for this method"""
-    if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
-        return
+def run_sms_notifications(doc: Document, method: str):
+	"""
+	Run notifications for this method.
+	Optimization: Checks cache first to avoid redundant DB queries.
+	"""
+	if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
+		return
 
-    if doc.flags.sms_notifications_executed == None:
-        doc.flags.sms_notifications_executed = []
+	if doc.flags.sms_notifications_executed is None:
+		doc.flags.sms_notifications_executed = []
 
-    if doc.flags.sms_notifications == None:
-        alerts = frappe.cache().hget("sms_notifications", doc.doctype)
-        if alerts == None:
-            alerts = frappe.get_all(
-                "SMS Notification",
-                fields=["name", "event", "method"],
-                filters={"enabled": 1, "document_type": doc.doctype},
-            )
-            frappe.cache().hset("sms_notifications", doc.doctype, alerts)
-        doc.flags.sms_notifications = alerts
+	if doc.flags.sms_notifications is None:
+		alerts = frappe.cache().hget("sms_notifications", doc.doctype)
+		if alerts is None:
+			alerts = frappe.get_all(
+				"SMS Notification",
+				fields=["name", "event", "method"],
+				filters={"enabled": 1, "document_type": doc.doctype},
+			)
+			frappe.cache().hset("sms_notifications", doc.doctype, alerts)
+		doc.flags.sms_notifications = alerts
 
-    if not doc.flags.sms_notifications:
-        return
+	if not doc.flags.sms_notifications:
+		return
 
-    def _evaluate_alert(alert):
-        if not alert.name in doc.flags.sms_notifications_executed:
-            evaluate_alert(doc, alert.name, alert.event)
-            doc.flags.sms_notifications_executed.append(alert.name)
+	def _evaluate_alert(alert):
+		if alert.name not in doc.flags.sms_notifications_executed:
+			evaluate_alert(doc, alert.name, alert.event)
+			doc.flags.sms_notifications_executed.append(alert.name)
 
-    event_map = {
-        "on_update": "Save",
-        "after_insert": "New",
-        "on_submit": "Submit",
-        "on_cancel": "Cancel",
-    }
+	# Consolidated Hook Mapping
+	event_map = {
+		"on_update": "Save",
+		"after_insert": "New",
+		"on_submit": "Submit",
+		"on_cancel": "Cancel",
+	}
 
-    if not doc.flags.in_insert:
-        # value change is not applicable in insert
-        event_map["validate"] = "Value Change"
-        event_map["before_change"] = "Value Change"
-        event_map["before_update_after_submit"] = "Value Change"
-
-    for alert in doc.flags.sms_notifications:
-        event = event_map.get(method, None)
-        if event and alert.event == event:
-            _evaluate_alert(alert)
-        elif alert.event == "Method" and method == alert.method:
-            _evaluate_alert(alert)
+	for alert in doc.flags.sms_notifications:
+		event = event_map.get(method)
+		
+		# Value Change is a special case of Save (on_update)
+		if method == "on_update" and alert.event == "Value Change":
+			_evaluate_alert(alert)
+		elif event and alert.event == event:
+			_evaluate_alert(alert)
+		elif alert.event == "Method" and method == alert.method:
+			_evaluate_alert(alert)
 
 
 @frappe.whitelist()
@@ -323,61 +323,40 @@ def trigger_notifications(doc, method=None):
                 frappe.db.commit()
 
 
-def evaluate_alert(doc, alert, event):
-    from jinja2 import TemplateError
+def evaluate_alert(doc: Document, alert: Any, event: str):
+	from jinja2 import TemplateError
 
-    try:
-        if isinstance(alert, string_types):
-            alert = frappe.get_doc("SMS Notification", alert)
+	try:
+		if isinstance(alert, str):
+			alert = frappe.get_doc("SMS Notification", alert)
 
-        context = get_context(doc)
+		context = get_context(doc)
 
-        if alert.condition:
-            if not frappe.safe_eval(alert.condition, None, context):
-                return
+		if alert.condition:
+			if not frappe.safe_eval(alert.condition, None, context):
+				return
 
-        if event == "Value Change" and not doc.is_new():
-            try:
-                db_value = frappe.db.get_value(
-                    doc.doctype, doc.name, alert.value_changed
-                )
-            except Exception as e:
-                if frappe.db.is_missing_column(e):
-                    alert.db_set("enabled", 0)
-                    frappe.log_error(
-                        "Notification {0} has been disabled due to missing field".format(
-                            alert.name
-                        )
-                    )
-                    return
-                else:
-                    raise
-            db_value = parse_val(db_value)
-            if (doc.get(alert.value_changed) == db_value) or (
-                not db_value and not doc.get(alert.value_changed)
-            ):
-                return  # value not changed
+		if event == "Value Change" and not doc.is_new():
+			# High-impact PR Tip: Use Frappe's built-in field change detection
+			if not doc.has_value_changed(alert.value_changed):
+				return
 
-        if event != "Value Change" and not doc.is_new():
-            # reload the doc for the latest values & comments,
-            # except for validate type event.
-            doc = frappe.get_doc(doc.doctype, doc.name)
-        alert.send(doc)
-    except TemplateError:
-        frappe.throw(
-            _(
-                "Error while evaluating Notification {0}. Please fix your template."
-            ).format(alert)
-        )
-    except Exception as e:
-        error_log = frappe.log_error(message=frappe.get_traceback(), title=str(e))
-        frappe.throw(
-            _(
-                "Error in Notification: {}".format(
-                    frappe.utils.get_link_to_form("Error Log", error_log.name)
-                )
-            )
-        )
+		alert.send(doc)
+	except TemplateError:
+		frappe.throw(
+			_(
+				"Error while evaluating Notification {0}. Please fix your template."
+			).format(alert)
+		)
+	except Exception as e:
+		error_log = frappe.log_error(message=frappe.get_traceback(), title=str(e))
+		frappe.throw(
+			_(
+				"Error in Notification: {}".format(
+					frappe.utils.get_link_to_form("Error Log", error_log.name)
+				)
+			)
+		)
 
 
 def get_context(doc):
