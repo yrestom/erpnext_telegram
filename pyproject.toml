@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "erpnext_telegram_integration"
+version = "1.2.0"
+description = "Telegram Integration For Frappe - Erpnext"
+authors = [
+    { name = "Youssef Restom", email = "Youssef@totrox.com" }
+]
+requires-python = ">=3.8"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["."]
