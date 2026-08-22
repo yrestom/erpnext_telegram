@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "erpnext_telegram_integration"
-version = "1.2.0"
+version = "15.0.0"
 description = "Telegram Integration For Frappe - Erpnext"
 authors = [
     { name = "Youssef Restom", email = "Youssef@totrox.com" }
@@ -17,3 +17,6 @@ dependencies = { file = ["requirements.txt"] }
 
 [tool.setuptools.packages.find]
 where = ["."]
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<16.0.0"
